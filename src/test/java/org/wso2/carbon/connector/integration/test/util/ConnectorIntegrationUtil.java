@@ -1,6 +1,5 @@
 /*
- *
- *  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -24,27 +23,34 @@ import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.automation.core.ProductConstant;
-import org.wso2.carbon.mediation.library.stub.upload.MediationLibraryUploaderStub;
-import org.wso2.carbon.mediation.library.stub.upload.types.carbon.LibraryFileItem;
 
-import javax.activation.DataHandler;
 import javax.xml.stream.XMLStreamException;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
-
+/**
+ * Util class for connector.
+ */
 public class ConnectorIntegrationUtil {
     private static final Log log = LogFactory.getLog(ConnectorIntegrationUtil.class);
 
+    /**
+     * To get the connector config properties for specific connector.
+     *
+     * @param connectorName Name of the connector.
+     * @return Relevant property list
+     */
     public static Properties getConnectorConfigProperties(String connectorName) {
-        String connectorConfigFile = null;
+        String connectorConfigFile;
         ProductConstant.init();
         try {
             connectorConfigFile =
@@ -70,24 +76,18 @@ public class ConnectorIntegrationUtil {
         return null;
     }
 
-    public static void uploadConnector(String repoLocation, MediationLibraryUploaderStub mediationLibUploadStub,
-                                       String strFileName) throws MalformedURLException, RemoteException {
-        List<LibraryFileItem> uploadLibraryInfoList = new ArrayList<LibraryFileItem>();
-        LibraryFileItem uploadedFileItem = new LibraryFileItem();
-        uploadedFileItem.setDataHandler(new DataHandler(new URL("file:" + "///" + repoLocation + "/" + strFileName)));
-        uploadedFileItem.setFileName(strFileName);
-        uploadedFileItem.setFileType("zip");
-        uploadLibraryInfoList.add(uploadedFileItem);
-        LibraryFileItem[] uploadServiceTypes = new LibraryFileItem[uploadLibraryInfoList.size()];
-        uploadServiceTypes = uploadLibraryInfoList.toArray(uploadServiceTypes);
-        mediationLibUploadStub.uploadLibrary(uploadServiceTypes);
-    }
-
-
-    public static OMElement sendXMLRequest(String addUrl, String query) throws MalformedURLException, IOException,
+    /**
+     * To send a XML request.
+     * @param addUrl URL.
+     * @param query query.
+     * @return the XML
+     * @throws IOException IO Exception.
+     * @throws XMLStreamException XML Stream Exception.
+     */
+    public static OMElement sendXMLRequest(String addUrl, String query) throws IOException,
             XMLStreamException {
         String charset = "UTF-8";
-        System.out.println("=======url======"+addUrl+"======="+query);
+        System.out.println("=======url======" + addUrl + "=======" + query);
         URLConnection connection = new URL(addUrl).openConnection();
         connection.setDoOutput(true);
         connection.setRequestProperty("Accept-Charset", charset);
@@ -128,29 +128,21 @@ public class ConnectorIntegrationUtil {
                 out = sb.toString();
             }
         }
-        System.out.println("=======out======"+out);
-        OMElement omElement = AXIOMUtil.stringToOM(out);
-        return omElement;
+        log.info("Out : " + out);
+        return AXIOMUtil.stringToOM(out);
     }
 
-    public static String getFileContent(String path) throws IOException {
+    public static String getFileContent(String path) {
         StringBuilder stringBuilder = new StringBuilder();
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(path));
+        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             String line;
             String ls = System.getProperty("line.separator");
             while ((line = reader.readLine()) != null) {
                 stringBuilder.append(line);
                 stringBuilder.append(ls);
             }
-
         } catch (IOException ioe) {
             log.error("Error reading request from file.", ioe);
-        } finally {
-            if (reader != null) {
-                reader.close();
-            }
         }
         return stringBuilder.toString();
     }

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -18,7 +18,7 @@
 package org.wso2.carbon.connector.rm;
 
 /**
- * DAO for the input parameters
+ * Reliable message specific parameters that will provided during initialization.
  */
 public class RMParameters {
     private String endpoint;
@@ -28,51 +28,111 @@ public class RMParameters {
     private String soapVersion;
     private String configLocation;
 
+    /**
+     * To get the endpoint.
+     *
+     * @return relevant endpoint configured for initialization.
+     */
     public String getEndpoint() {
         return endpoint;
     }
 
+    /**
+     * To set the endpoint.
+     *
+     * @param endpoint Endpoint
+     */
     public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
     }
 
+    /**
+     * To get the service name of relevant soap endpoint.
+     *
+     * @return service name.
+     */
     public String getServiceName() {
         return serviceName;
     }
 
-    public void setServiceName(String serviceName) {
+    /**
+     * To set the service name.
+     *
+     * @param serviceName Service name.
+     */
+    void setServiceName(String serviceName) {
         this.serviceName = serviceName;
     }
 
+    /**
+     * To get the port name of the relevant soap service.
+     *
+     * @return port name.
+     */
     public String getPortName() {
         return portName;
     }
 
-    public void setPortName(String portName) {
+    /**
+     * To set the port name of the relevant soap service.
+     *
+     * @param portName port name
+     */
+    void setPortName(String portName) {
         this.portName = portName;
     }
 
+    /**
+     * To get the namespace.
+     *
+     * @return namespace.
+     */
     public String getNamespace() {
         return namespace;
     }
 
+    /**
+     * To get the soap version.
+     *
+     * @return soap version.
+     */
     public String getSoapVersion() {
         return soapVersion;
     }
 
+    /**
+     * To set the soap version.
+     *
+     * @param soapVersion soap version.
+     */
     public void setSoapVersion(String soapVersion) {
         this.soapVersion = soapVersion;
     }
 
-    public void setNamespace(String namespace) {
+    /**
+     * To set the namespace.
+     *
+     * @param namespace namespace.
+     */
+    void setNamespace(String namespace) {
         this.namespace = namespace;
     }
 
+    /**
+     * To get the ESB bus config location.
+     *
+     * @return Config location.
+     */
     public String getConfigLocation() {
         return configLocation;
     }
 
-    public void setConfigLocation(String configLocation) {
+    /**
+     * To set the config location.
+     *
+     * @param configLocation Config location.
+     */
+    void setConfigLocation(String configLocation) {
         this.configLocation = configLocation;
     }
 }

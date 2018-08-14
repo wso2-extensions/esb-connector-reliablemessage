@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-   Copyright (c) 2005-2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+   Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
    WSO2 Inc. licenses this file to you under the Apache License,
    Version 2.0 (the "License"); you may not use this file except
    in compliance with the License.
@@ -21,15 +21,15 @@
        startOnLoad="true">
     <target>
         <inSequence>
-            <reliable-message.init>
+            <reliablemessage.init>
                 <endpoint>http://localhost:9010/SoapContext/GreeterPort</endpoint>
                 <port>GreeterPort</port>
                 <service>GreeterService</service>
                 <namespace>http://cxf.apache.org/hello_world_soap_http</namespace>
                 <soapVersion>1.1</soapVersion>
-                <configLocation>repository/conf/cxf/client.xml</configLocation>
-            </reliable-message.init>
-            <reliable-message.send/>
+                <configLocation>conf/cxf/client.xml</configLocation>
+            </reliablemessage.init>
+            <reliablemessage.send/>
             <respond/>
         </inSequence>
         <outSequence>

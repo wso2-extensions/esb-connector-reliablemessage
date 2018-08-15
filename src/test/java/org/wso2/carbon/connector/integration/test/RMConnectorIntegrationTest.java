@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -21,6 +21,7 @@ import org.apache.axiom.om.OMElement;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.automation.engine.frameworkutils.FrameworkPathUtil;
 import org.wso2.carbon.connector.integration.test.util.ConnectorIntegrationUtil;
 import org.wso2.connector.integration.test.base.ConnectorIntegrationTestBase;
 
@@ -29,12 +30,13 @@ import java.util.Properties;
 
 public class RMConnectorIntegrationTest extends ConnectorIntegrationTestBase {
     private String pathToRequestsDirectory = null;
-    private static final String CONNECTOR_PROPERTIES = "reliable";
-    private static final String CONNECTOR_NAME = "reliable-message-connector-1.0.0";
+    private static final String CONNECTOR_PROPERTIES = "reliablemessage";
 
     @BeforeClass(alwaysRun = true)
     public void setEnvironment() throws Exception {
-        init(CONNECTOR_NAME);
+        String connectorName =
+                System.getProperty("connector_name") + "-connector-" + System.getProperty("connector_version") + ".zip";
+        init(connectorName);
         String repoLocation;
         if (System.getProperty("os.name").toLowerCase().contains("windows")) {
             repoLocation = System.getProperty("connector_repo").replace("/", "\\");
@@ -43,11 +45,17 @@ public class RMConnectorIntegrationTest extends ConnectorIntegrationTestBase {
         }
         Properties reliableMessagingConnectorProperties = ConnectorIntegrationUtil.getConnectorConfigProperties
                 (CONNECTOR_PROPERTIES);
-        pathToRequestsDirectory = repoLocation + reliableMessagingConnectorProperties.getProperty
-                ("requestDirectoryRelativePath");
+        if (reliableMessagingConnectorProperties == null) {
+            reliableMessagingConnectorProperties = new Properties();
+        }
+        pathToRequestsDirectory =
+                repoLocation + reliableMessagingConnectorProperties.getProperty("requestDirectoryRelativePath");
+        ProcessBuilder pb = new ProcessBuilder("java", "-jar", "rm_server.jar");
+        pb.directory(new File(FrameworkPathUtil.getSystemResourceLocation() + File.separator + "rmserver"));
+        pb.start();
     }
 
-    @Test(enabled = true, description = "Send reliable message success request")
+    @Test(description = "Send reliable message success request")
     public void sendRmEnableRequest() throws Exception {
         String methodName = "reliable";
         String actualResponse = "Hello Gil";
@@ -56,7 +64,7 @@ public class RMConnectorIntegrationTest extends ConnectorIntegrationTestBase {
         final String soapRequestString = ConnectorIntegrationUtil
                 .getFileContent(file.getPath());
         OMElement omElement = ConnectorIntegrationUtil.sendXMLRequest(
-                getProxyServiceURL(methodName), soapRequestString);
+                getProxyServiceURLHttp(methodName), soapRequestString);
         Assert.assertEquals(omElement.getFirstElement().getText(), actualResponse, "Expected response not found");
     }
 }

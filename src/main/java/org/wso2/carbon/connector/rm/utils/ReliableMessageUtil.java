@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -17,25 +17,30 @@
  */
 package org.wso2.carbon.connector.rm.utils;
 
-
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.staxutils.StaxUtils;
-import org.compass.core.util.reader.StringReader;
 import org.w3c.dom.Document;
 import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.rm.RMParameters;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 /**
  * Reliable message utility methods
@@ -44,7 +49,7 @@ public class ReliableMessageUtil {
     private static Log log = LogFactory.getLog(ReliableMessageUtil.class);
 
     /**
-     * Convert string xml content to axiom SoapEnvelop
+     * Convert string xml content to axiom soap envelop.
      *
      * @param xmlContent String soapEnvelop content
      * @return SOAPEnvelope backend reliable service response
@@ -58,11 +63,11 @@ public class ReliableMessageUtil {
     }
 
     /**
-     * Convert SOAPEnvelope to inputStream
+     * Convert SOAPEnvelope to inputStream.
      *
      * @param soapEnvelope soapEnvelop.
-     * @throws ConnectException
-     * @retuen InputStream converted inputStream.
+     * @return InputStream converted inputStream.
+     * @throws ConnectException Connect Exception
      */
     public static InputStream getSOAPEnvelopAsStreamSource(SOAPEnvelope soapEnvelope) throws ConnectException {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -70,11 +75,10 @@ public class ReliableMessageUtil {
         StringWriter stringWriter = null;
 
         try {
-
             docBuilder = documentBuilderFactory.newDocumentBuilder();
             stringWriter = new StringWriter();
             String soapEnvelop = "";
-            if(soapEnvelope != null && soapEnvelope.getBody() != null) {
+            if (soapEnvelope != null && soapEnvelope.getBody() != null) {
                 soapEnvelop = soapEnvelope.getBody().toString();
             }
             Document doc = docBuilder.parse(new InputSource(new StringReader(soapEnvelop)));
@@ -85,8 +89,8 @@ public class ReliableMessageUtil {
             StreamResult result = new StreamResult(stringWriter);
             DOMSource source = new DOMSource(doc);
             trans.transform(source, result);
-        } catch (Exception e) {
-            String message = "Failed to parse SOAPEnvelop request in to StreamSource";
+        } catch (IOException | TransformerException | SAXException | ParserConfigurationException e) {
+            String message = "Failed to parse SOAPEnvelop request in to StreamSource in reliable message esb connector";
             throwException(message, e);
         } finally {
             try {
@@ -97,14 +101,18 @@ public class ReliableMessageUtil {
                 log.warn("Failed to close String writer:" + e.getMessage());
             }
         }
-        return new ByteArrayInputStream(stringWriter.toString().getBytes());
+        if (stringWriter != null) {
+            return new ByteArrayInputStream(stringWriter.toString().getBytes());
+        } else {
+            return null;
+        }
     }
 
     /**
      * Validate input parameters.
      *
      * @param inputParams input parameters.
-     * @throws ConnectException
+     * @throws ConnectException Connect Exception.
      */
     public static void validateInputs(RMParameters inputParams) throws ConnectException {
         validateMandatoryInputs(inputParams);
@@ -115,33 +123,25 @@ public class ReliableMessageUtil {
      * Validate mandatory input parameters.
      *
      * @param inputParams input parameters.
-     * @throws ConnectException
+     * @throws ConnectException Connect Exception.
      */
     private static void validateMandatoryInputs(RMParameters inputParams) throws ConnectException {
-        StringBuffer fields = new StringBuffer();
+        StringBuilder fields = new StringBuilder();
         boolean valid = true;
 
-        if (inputParams.getEndpoint() == null || inputParams.getEndpoint().isEmpty()) {
-            fields.append("wsdlURL ");
+        if (StringUtils.isEmpty(inputParams.getEndpoint())) {
+            fields.append("Endpoint URL ");
             valid = false;
-        }
-
-        if (inputParams.getServiceName() == null || inputParams.getServiceName().isEmpty()) {
+        } else if (StringUtils.isEmpty(inputParams.getServiceName())) {
             fields.append("serviceName ");
             valid = false;
-        }
-
-        if (inputParams.getPortName() == null || inputParams.getPortName().isEmpty()) {
+        } else if (StringUtils.isEmpty(inputParams.getPortName())) {
             fields.append("portName ");
             valid = false;
-        }
-
-        if (inputParams.getNamespace() == null || inputParams.getNamespace().isEmpty()) {
+        } else if (StringUtils.isEmpty(inputParams.getNamespace())) {
             fields.append("namespace ");
             valid = false;
-        }
-
-        if (inputParams.getConfigLocation() == null || inputParams.getConfigLocation().isEmpty()) {
+        } else if (StringUtils.isEmpty(inputParams.getConfigLocation())) {
             fields.append("configLocation ");
             valid = false;
         }
@@ -156,24 +156,38 @@ public class ReliableMessageUtil {
      * Validate soap version.
      *
      * @param inputParams input parameters.
-     * @throws ConnectException
+     * @throws ConnectException Connect exception.
      */
     private static void validateSoapVersion(RMParameters inputParams) throws ConnectException {
         if (inputParams.getSoapVersion() == null || inputParams.getSoapVersion().isEmpty()) {
             inputParams.setSoapVersion(RMConstants.SOAP_V_11); //set default soap version(1.1)
         }
 
-        if (!RMConstants.SOAP_V_11.equals(inputParams.getSoapVersion()) && !RMConstants.SOAP_V_12.equals(inputParams.getSoapVersion())) {
-            String message = "Invalid soap version defined";
+        if (!RMConstants.SOAP_V_11.equals(inputParams.getSoapVersion()) && !RMConstants.SOAP_V_12
+                .equals(inputParams.getSoapVersion())) {
+            String message = "Invalid soap version defined. This connector only supports 1.1 and 1.2 soap versions";
             throwException(message);
         }
     }
 
+    /**
+     * To throw the exception.
+     *
+     * @param message Relevant exception message.
+     * @param e       Exception object.
+     * @throws ConnectException Connect Exception.
+     */
     private static void throwException(String message, Exception e) throws ConnectException {
         log.error(message);
         throw new ConnectException(e, message);
     }
 
+    /**
+     * To throw the exception.
+     *
+     * @param message Relevant  exception message
+     * @throws ConnectException Connect exception.
+     */
     private static void throwException(String message) throws ConnectException {
         log.error(message);
         throw new ConnectException(message);

@@ -1,11 +1,9 @@
 ## Working with the Reliable Message Connector
 
 ### Installation Prerequisites
-This connector requires **CXF WS Reliable Messaging feature**. You need to install this feature. For more 
-information on how to install this feature, see [installing features](https://docs.wso2
-.com/display/WSO2EI/Installing+Features+Using+POM+Files)
+You need to install the **WSO2 Carbon — CXF WS Reliable Messaging feature** for the connector to work successfully. To install this, copy the WSO2 EI pack and the following pom.xml file to the same directory. For more information, see [installing features](https://docs.wso2.com/display/ADMIN44x/Working+with+Features#WorkingwithFeatures-pom_approachInstallingfeaturesusingpomfiles).
 
-Following show a sample POM file to install this feature,
+You can use the sample POM file that is given below to install this feature,
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -93,8 +91,8 @@ Following show a sample POM file to install this feature,
 ```
 
 #### Initializing and using the Connector
-To use this connector for reliable messaging, this connector need to be initialized using `<reliablemessage.init>` 
-element as follow,
+To use this connector for reliable messaging, you need to initialize it using the `<reliablemessage.init>` 
+element as follows,
 
 ```xml
  <reliablemessage.init>
@@ -106,17 +104,17 @@ element as follow,
     <configLocation>repository/conf/cxf/client.xml</configLocation>
 </reliablemessage.init>
 ```
+The parameters that are listed below are required.
+
 Parameter Name |  Description
 --- | ---
-endpoint | Relevant SOAP backend that implement reliable messaging (i.e. ws-rm)
-port | Port name in WSDL of the soap service that you would like to send message to. 
-service |  Service name of the soap service
-soapVersion | Soap version of relevant service
-configLocation | CXF Service bus configuration location 
+endpoint | The SOAP backend that implement reliable messaging (i.e. ws-rm).
+port | The WSDL port name of the SOAP service that you would like to send messages to. 
+service |  The service name of the SOAP service.
+soapVersion | The SOAP version of relevant service.
+configLocation | The CXF service bus configuration location.
 
-All of these parameters are required.
-
-For a service defined in WSDL as follow,
+Define the `GreeterService` WSDL service as follows,
 ```xml
 <service name="GreeterService">
     <port binding="tns:Greeter_SOAPBinding" name="GreeterPort">
@@ -126,7 +124,7 @@ For a service defined in WSDL as follow,
 </service>
 ```
 
-Relevant init configuration will be follow,
+The `init` configuration for the service you defined will be as follows,
 ```xml
  <reliablemessage.init>
     <endpoint>http://localhost:9010/SoapContext/GreeterPort</endpoint>
@@ -137,7 +135,7 @@ Relevant init configuration will be follow,
     <configLocation>repository/conf/cxf/client.xml</configLocation>
 </reliablemessage.init>
 ```
-After doing the initialization, to send the message, send operation should be called as follow,
+To send a message after the initialization, you need to call the send operation as follows,
 ```xml
 <reliablemessage.send/>
 ```

@@ -91,7 +91,7 @@ You can use the sample POM file that is given below to install this feature(Tip:
 ```
 
 #### Initializing and using the Connector
-To use this connector for reliable messaging, you need to initialize it using the `<reliablemessage.init>` 
+After adding connector through WSO2 Enterprise Integrator, to use this connector for reliable messaging, you need to initialize it using the `<reliablemessage.init>`
 element as follows,
 
 ```xml

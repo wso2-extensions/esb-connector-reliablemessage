@@ -3,7 +3,8 @@
 ### Installation Prerequisites
 You need to install the **WSO2 Carbon — CXF WS Reliable Messaging feature** for the connector to work successfully. To install this, copy the WSO2 EI pack and the following pom.xml file to the same directory. For more information, see [installing features](https://docs.wso2.com/display/ADMIN44x/Working+with+Features#WorkingwithFeatures-pom_approachInstallingfeaturesusingpomfiles).
 
-You can use the sample POM file that is given below to install this feature(Tip: use the EI product version you are using for config <destination>  and 'dir' attribute).
+You can use the sample POM file that is given below to install this feature.
+**Tip:** Replace the current Enterprise Integrator version that is given for the `<destination>` and `<replace dir>` properties with your Enterprise Integrator product version.
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -91,9 +92,7 @@ You can use the sample POM file that is given below to install this feature(Tip:
 ```
 
 #### Initializing and using the Connector
-After adding connector through WSO2 Enterprise Integrator, to use this connector for reliable messaging, you need to initialize it using the `<reliablemessage.init>`
-element as follows,
-
+After adding the connector through [WSO2 EI tooling](https://docs.wso2.com/display/EI630/Working+with+Connectors+via+Tooling) or the [WSO2 EI Management Console](https://docs.wso2.com/display/EI630/Working+with+Connectors+via+the+Management+Console), you need to initialize it using the `<reliablemessage.init>` element as follows,
 ```xml
  <reliablemessage.init>
     <endpoint>http://localhost:9010/SoapContext/GreeterPort</endpoint>

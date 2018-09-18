@@ -3,7 +3,7 @@
 ### Installation Prerequisites
 You need to install the **WSO2 Carbon — CXF WS Reliable Messaging feature** for the connector to work successfully. To install this, copy the WSO2 EI pack and the following pom.xml file to the same directory. For more information, see [installing features](https://docs.wso2.com/display/ADMIN44x/Working+with+Features#WorkingwithFeatures-pom_approachInstallingfeaturesusingpomfiles).
 
-You can use the sample POM file that is given below to install this feature,
+You can use the sample POM file that is given below to install this feature(Tip: use the EI product version you are using for config <destination>  and 'dir' attribute).
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -91,7 +91,7 @@ You can use the sample POM file that is given below to install this feature,
 ```
 
 #### Initializing and using the Connector
-To use this connector for reliable messaging, you need to initialize it using the `<reliablemessage.init>` 
+After adding connector through WSO2 Enterprise Integrator, to use this connector for reliable messaging, you need to initialize it using the `<reliablemessage.init>`
 element as follows,
 
 ```xml

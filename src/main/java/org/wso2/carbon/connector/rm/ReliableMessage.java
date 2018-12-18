@@ -37,6 +37,7 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Dispatch;
 import javax.xml.ws.Service;
 import javax.xml.ws.soap.SOAPBinding;
+import javax.xml.ws.soap.SOAPFaultException;
 
 /**
  * Reliable message connector to send the message.
@@ -104,12 +105,21 @@ public class ReliableMessage extends AbstractConnector {
 
         RMParameters inputParams = (RMParameters) messageContext.getProperty(RMConstants.RM_PARAMS);
         Bus springBus = (Bus) messageContext.getProperty(RMConstants.SPRING_BUS);
+        InFaultSOAPFaultHandlingInterceptor interceptor = new InFaultSOAPFaultHandlingInterceptor(messageContext);
+        springBus.getInFaultInterceptors().add(interceptor);
         Dispatch<Source> sourceDispatch = createDispatch(inputParams, messageContext);
         Source source = new StreamSource(
                 ReliableMessageUtil.getSOAPEnvelopAsStreamSource(messageContext.getEnvelope()));
-        Source response = sourceDispatch.invoke(source);
-        setResponse(messageContext, response);
-        // shutdown bus
+        try {
+            Source response = sourceDispatch.invoke(source);
+            setResponse(messageContext, response);
+        } catch (SOAPFaultException e) {
+            messageContext.setProperty("HTTP_SC", interceptor.getStatusCode());
+            messageContext.setProperty("ERROR_CODE", interceptor.getCode());
+            messageContext.setProperty("ERROR_MESSAGE", interceptor.getFaultMessage());
+            messageContext.setProperty("ERROR_EXCEPTION", interceptor.getException());
+            throw new ConnectException(e, "Exception occurred while invoking the backend and get the response");
+        }
         springBus.shutdown(true);
     }
 

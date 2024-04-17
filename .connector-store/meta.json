@@ -8,5 +8,15 @@
     "labels": [
         "Other"
     ],
-    "releases": []
+    "releases": [
+        {
+            "tagName": "1.0.0",
+            "products": [
+                "EI 6.3.0",
+                "EI 6.2.0",
+                "EI 6.1.1",
+                "EI 6.1.0"
+            ]
+        }
+    ]
 }

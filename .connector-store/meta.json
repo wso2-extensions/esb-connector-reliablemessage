@@ -6,17 +6,18 @@
     "description": "This connector allows to connect to a soap service that implements reliable messaging. Relevant sequence of handshakes during the reliable message exchange will be handled within this connector internally.",
     "status": "Active",
     "labels": [
-        "Other"
+        "connector"
     ],
     "releases": [
         {
-            "tagName": "1.0.0",
+            "tag_name": "v1.0.0",
             "products": [
                 "EI 6.3.0",
                 "EI 6.2.0",
                 "EI 6.1.1",
                 "EI 6.1.0"
-            ]
+            ],
+            "isHidden": false
         }
     ]
 }

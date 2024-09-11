@@ -4,7 +4,7 @@
     "category": "Other",
     "documentationUrl": "https://github.com/wso2-extensions/esb-connector-reliablemessage/tree/v1.0.0/docs",
     "description": "This connector allows to connect to a soap service that implements reliable messaging. Relevant sequence of handshakes during the reliable message exchange will be handled within this connector internally.",
-    "status": "Active",
+    "status": "Inactive",
     "labels": [
         "reliable messaging"
     ],
